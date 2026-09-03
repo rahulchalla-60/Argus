@@ -1,0 +1,6 @@
+pandas>=2.0
+networkx>=3.0
+xgboost>=2.0
+scikit-learn>=1.5
+plotly>=5.0
+streamlit>=1.35
