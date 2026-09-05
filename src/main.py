@@ -1,20 +1,13 @@
-from data_loader import (
-    load_dataset,
-    get_summary
-)
-
 from pathlib import Path
+from stream_simulator import StreamSimulator
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATASET_PATH = BASE_DIR / "data" / "paysim.csv"
 
 def main():
-    df = load_dataset(DATASET_PATH)
-
-
-    summary = get_summary(df)
-
-    print(summary)
+    sim = StreamSimulator(DATASET_PATH, nrows=10)
+    for txn in sim.stream():
+        print(f"[{txn['step']}] {txn['type']} | {txn['nameOrig']} -> {txn['nameDest']} | ${txn['amount']:,.2f} | Fraud: {txn['isFraud']}")
 
 if __name__ == "__main__":
     main()
