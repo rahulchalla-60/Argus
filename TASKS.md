@@ -44,17 +44,17 @@
 - [ ] Add timestamp ordering — ensure chronological order
 
 ### 1.3 Graph Engine
-- [ ] Create `graph_engine.py`
-- [ ] Initialize `networkx.MultiDiGraph()`
-- [ ] Implement `add_transaction(sender, receiver, amount, timestamp)`
-  - [ ] Add sender node if not exists
-  - [ ] Add receiver node if not exists
-  - [ ] Add directed edge with `{amount, timestamp}` attributes
-- [ ] Implement `get_node_count()` and `get_edge_count()`
-- [ ] Implement `get_neighbors(account_id)` — returns in/out neighbors
-- [ ] Implement `get_transactions(account_id)` — returns all edges for an account
-- [ ] Test: add 10 transactions, verify graph has correct nodes/edges
-- [ ] Implement `get_subgraph(account_id, k_hops)` — extract local neighborhood
+- [x] Create `graph_engine.py`
+- [x] Initialize `networkx.MultiDiGraph()`
+- [x] Implement `add_transaction(sender, receiver, amount, timestamp)`
+  - [x] Add sender node if not exists
+  - [x] Add receiver node if not exists
+  - [x] Add directed edge with `{amount, timestamp}` attributes
+- [x] Implement `get_node_count()` and `get_edge_count()`
+- [x] Implement `get_neighbors(account_id)` — returns in/out neighbors
+- [x] Implement `get_transactions(account_id)` — returns all edges for an account
+- [x] Test: add 10 transactions, verify graph has correct nodes/edges
+- [x] Implement `get_subgraph(account_id, k_hops)` — extract local neighborhood
 
 ### 1.4 Live Graph Visualization (Proof of Concept)
 - [ ] Visualize small graph (5-10 nodes) with matplotlib or plotly
