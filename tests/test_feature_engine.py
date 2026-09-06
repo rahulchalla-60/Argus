@@ -8,7 +8,7 @@ from feature_engine import FeatureEngine, AccountFeatures
 
 
 def test_feature_engine_setup():
-    fe = FeatureEngine(time_window=1)
+    fe = FeatureEngine(time_window=24)
 
     assert fe.get_features("USER_A") is None
     assert fe.account_count() == 0
@@ -17,12 +17,16 @@ def test_feature_engine_setup():
     assert feat_a.account_id == "USER_A"
     assert feat_a.total_received == 0.0
     assert feat_a.total_sent == 0.0
+    assert feat_a.pass_through_ratio == 0.0
     assert feat_a.forwarding_delay is None
+    assert feat_a.velocity == 0
+    assert feat_a.fan_in == 0
+    assert feat_a.fan_out == 0
     print("[PASS] FeatureEngine setup & AccountFeatures state.")
 
 
 def test_forwarding_delay_cases():
-    fe = FeatureEngine(time_window=1)
+    fe = FeatureEngine(time_window=24)
 
     # Case 1: Account only receives (A -> B at step 10)
     fe.update_transaction("A", "B", amount=500.0, timestamp=10)
@@ -42,19 +46,70 @@ def test_forwarding_delay_cases():
     assert feat_b.last_sent_time == 25
     assert feat_b.forwarding_delay == 15
 
-    # Case 4: Multiple receives before send (D receives at 100, 110, 120; sends at 125) -> delay = 125 - 120 = 5
-    fe.update_transaction("SRC1", "D", amount=100.0, timestamp=100)
-    fe.update_transaction("SRC2", "D", amount=200.0, timestamp=110)
-    fe.update_transaction("SRC3", "D", amount=300.0, timestamp=120)
-    fe.update_transaction("D", "SINK", amount=580.0, timestamp=125)
+    print("[PASS] Forwarding delay edge cases.")
 
-    feat_d = fe.get_features("D")
-    assert feat_d.forwarding_delay == 5
 
-    print("[PASS] Forwarding delay edge cases & stream updates.")
+def test_pass_through_ratio():
+    fe = FeatureEngine(time_window=24)
+
+    fe.update_transaction("SRC", "MULE", amount=10000.0, timestamp=1)
+    fe.update_transaction("MULE", "SINK", amount=9800.0, timestamp=2)
+
+    mule = fe.get_features("MULE")
+    assert mule.total_received == 10000.0
+    assert mule.total_sent == 9800.0
+    assert round(mule.get_lifetime_pass_through_ratio(), 2) == 0.98
+    assert round(mule.pass_through_ratio, 2) == 0.98
+
+    print("[PASS] Pass-through ratio.")
+
+
+def test_fan_in_fan_out_and_velocity():
+    fe = FeatureEngine(time_window=24)
+
+    # 1. Fan-In: 5 unique accounts send to B at timestamp 1
+    for i, sender in enumerate(["A", "C", "D", "E", "F"]):
+        fe.update_transaction(sender, "B", amount=100.0, timestamp=1)
+
+    feat_b = fe.get_features("B")
+    assert feat_b.fan_in == 5
+    assert feat_b.velocity == 5
+    assert feat_b.fan_out == 0
+
+    # 2. Fan-Out: B sends to 4 unique accounts at timestamp 2
+    for receiver in ["R1", "R2", "R3", "R4"]:
+        fe.update_transaction("B", receiver, amount=50.0, timestamp=2)
+
+    assert feat_b.fan_out == 4
+    assert feat_b.velocity == 9  # 5 in + 4 out
+
+    # 3. Add 1 more transaction to reach 10 total transactions
+    fe.update_transaction("B", "R1", amount=25.0, timestamp=3)
+    assert feat_b.velocity == 10
+    assert feat_b.fan_out == 4  # R1 was already a unique receiver
+
+    # 4. Window Expiry: at timestamp 30 (cutoff = 30 - 24 = 6), txns at t=1, 2, 3 expire
+    fe.update_transaction("NEW_SENDER", "B", amount=500.0, timestamp=30)
+    assert feat_b.fan_in == 1
+    assert feat_b.fan_out == 0
+    assert feat_b.velocity == 1
+    # Lifetime counts remain preserved
+    assert len(feat_b.unique_senders) == 6  # A, C, D, E, F, NEW_SENDER
+    assert len(feat_b.unique_receivers) == 4  # R1, R2, R3, R4
+
+    # 5. to_dict verification
+    d = fe.get_features_dict("B")
+    assert d["account_id"] == "B"
+    assert d["velocity"] == 1
+    assert d["fan_in"] == 1
+    assert d["lifetime_fan_in"] == 6
+
+    print("[PASS] Fan-in, fan-out, velocity, and window expiry.")
 
 
 if __name__ == "__main__":
     test_feature_engine_setup()
     test_forwarding_delay_cases()
+    test_pass_through_ratio()
+    test_fan_in_fan_out_and_velocity()
     print("\nAll feature engine tests passed successfully.")

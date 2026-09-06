@@ -78,27 +78,27 @@
 - [x] Test: receive at 10:00:00, send at 10:00:15 -> delay = 15 sec
 
 ### 2.3 Pass-Through Ratio
-- [ ] Track `total_received` and `total_forwarded` per account (rolling window)
-- [ ] Compute: `pass_through_ratio = total_forwarded / total_received`
-- [ ] Handle divide-by-zero (account never received)
-- [ ] Test: received=10000, forwarded=9800 -> ratio=0.98
+- [x] Track `total_received` and `total_forwarded` per account (rolling window)
+- [x] Compute: `pass_through_ratio = total_forwarded / total_received`
+- [x] Handle divide-by-zero (account never received)
+- [x] Test: received=10000, forwarded=9800 -> ratio=0.98
 
 ### 2.4 Fan-In / Fan-Out
-- [ ] Fan-in: count unique senders to this account (in last N hours)
-- [ ] Fan-out: count unique receivers from this account (in last N hours)
-- [ ] Use time-windowed counting (configurable window: 1h, 24h)
-- [ ] Test: 5 different accounts send to B -> fan_in(B) = 5
+- [x] Fan-in: count unique senders to this account (in last N hours)
+- [x] Fan-out: count unique receivers from this account (in last N hours)
+- [x] Use time-windowed counting (configurable window: 1h, 24h)
+- [x] Test: 5 different accounts send to B -> fan_in(B) = 5
 
 ### 2.5 Velocity
-- [ ] Count transactions per minute for each account
-- [ ] Use sliding window (e.g., last 60 seconds)
-- [ ] Test: 10 transactions in 1 minute -> velocity = 10
+- [x] Count transactions per minute for each account
+- [x] Use sliding window (e.g., last 60 seconds)
+- [x] Test: 10 transactions in 1 minute -> velocity = 10
 
 ### 2.6 Distinct Counterparties
-- [ ] Track `unique_senders_last_hour` per account
-- [ ] Track `unique_receivers_last_hour` per account
-- [ ] Use time-windowed sets
-- [ ] Test: account B receives from A, C, D in last hour -> unique_senders = 3
+- [x] Track `unique_senders_last_hour` per account
+- [x] Track `unique_receivers_last_hour` per account
+- [x] Use time-windowed sets
+- [x] Test: account B receives from A, C, D in last hour -> unique_senders = 3
 
 ### 2.7 Feature Computation Integration
 - [ ] Hook feature engine into graph engine — recompute on every new transaction
