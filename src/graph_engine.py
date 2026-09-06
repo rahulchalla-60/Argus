@@ -2,16 +2,24 @@ from collections import deque
 import networkx as nx
 from typing import Any
 from database import Database
+from feature_engine import FeatureEngine, AccountFeatures
 
 
 class GraphEngine:
-    def __init__(self, window_size: int = 50000, db: Database | None = None):
+    def __init__(
+        self,
+        window_size: int = 50000,
+        db: Database | None = None,
+        feature_engine: FeatureEngine | None = None
+    ):
         self.graph = nx.MultiDiGraph()
         self.window_size = window_size
         self.window = deque()
         self.db = db
+        self.feature_engine = feature_engine
 
     def add_transaction(self, sender: str, receiver: str, amount: float, timestamp: int, **metadata):
+        # 1. Update Graph & sliding window
         self.graph.add_node(sender)
         self.graph.add_node(receiver)
 
@@ -24,9 +32,12 @@ class GraphEngine:
         )
         self.window.append((sender, receiver, edge_key))
 
-        # ponytail: sliding window evicts old transactions to keep RAM constant
         if len(self.window) > self.window_size:
             self._evict_oldest()
+
+        # 2. Incrementally update feature engine in O(1)
+        if self.feature_engine:
+            self.feature_engine.update_transaction(sender, receiver, amount=amount, timestamp=timestamp)
 
     def _evict_oldest(self):
         old_sender, old_receiver, old_key = self.window.popleft()
@@ -86,6 +97,15 @@ class GraphEngine:
         for src, tgt, data in self.graph.out_edges(account_id, data=True):
             txns.append({"sender": src, "receiver": tgt, **data})
         return txns
+
+    def get_account_features(self, account_id: str) -> AccountFeatures | None:
+        if self.feature_engine:
+            return self.feature_engine.get_features(account_id)
+        return None
+
+    def get_account_features_dict(self, account_id: str) -> dict[str, Any] | None:
+        acc = self.get_account_features(account_id)
+        return acc.to_dict() if acc else None
 
     def get_subgraph(self, account_id: str, k_hops: int = 1) -> nx.MultiDiGraph:
         if account_id not in self.graph:

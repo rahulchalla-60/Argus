@@ -101,11 +101,11 @@
 - [x] Test: account B receives from A, C, D in last hour -> unique_senders = 3
 
 ### 2.7 Feature Computation Integration
-- [ ] Hook feature engine into graph engine — recompute on every new transaction
-- [ ] Implement `update_features(account_id, transaction)` — incremental update
-- [ ] Implement `get_features(account_id)` — returns all features as dict
-- [ ] Test: stream 50 transactions, print features for busiest account
-- [ ] Measure feature computation time per transaction (target: < 5ms)
+- [x] Hook feature engine into graph engine — recompute on every new transaction
+- [x] Implement `update_features(account_id, transaction)` — incremental update
+- [x] Implement `get_features(account_id)` — returns all features as dict
+- [x] Test: stream 50 transactions, print features for busiest account
+- [x] Measure feature computation time per transaction (target: < 5ms)
 
 ---
 
