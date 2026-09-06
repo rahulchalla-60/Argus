@@ -57,10 +57,10 @@
 - [x] Implement `get_subgraph(account_id, k_hops)` — extract local neighborhood
 
 ### 1.4 Live Graph Visualization (Proof of Concept)
-- [ ] Visualize small graph (5-10 nodes) with matplotlib or plotly
-- [ ] Show A -> B, A -> C, B -> D structure
-- [ ] Label edges with amounts
-- [ ] Verify graph updates when new transaction is added
+- [x] Visualize small graph (5-10 nodes) with matplotlib or plotly
+- [x] Show A -> B, A -> C, B -> D structure
+- [x] Label edges with amounts
+- [x] Verify graph updates when new transaction is added
 
 ---
 
