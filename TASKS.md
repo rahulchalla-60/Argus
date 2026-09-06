@@ -72,10 +72,10 @@
 - [x] Create per-account feature store (dict of account_id -> features)
 
 ### 2.2 Forwarding Delay
-- [ ] For each account, track `last_received_time` and `last_sent_time`
-- [ ] Compute: `forwarding_delay = last_sent_time - last_received_time`
-- [ ] Handle edge cases: account only sends, account only receives
-- [ ] Test: receive at 10:00:00, send at 10:00:15 -> delay = 15 sec
+- [x] For each account, track `last_received_time` and `last_sent_time`
+- [x] Compute: `forwarding_delay = last_sent_time - last_received_time`
+- [x] Handle edge cases: account only sends, account only receives
+- [x] Test: receive at 10:00:00, send at 10:00:15 -> delay = 15 sec
 
 ### 2.3 Pass-Through Ratio
 - [ ] Track `total_received` and `total_forwarded` per account (rolling window)
