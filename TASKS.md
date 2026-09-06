@@ -67,9 +67,9 @@
 ## Phase 2 — Temporal AML Features (Week 2)
 
 ### 2.1 Feature Engine Setup
-- [ ] Create `feature_engine.py`
-- [ ] Define `AccountFeatures` dataclass/dict structure
-- [ ] Create per-account feature store (dict of account_id -> features)
+- [x] Create `feature_engine.py`
+- [x] Define `AccountFeatures` dataclass/dict structure
+- [x] Create per-account feature store (dict of account_id -> features)
 
 ### 2.2 Forwarding Delay
 - [ ] For each account, track `last_received_time` and `last_sent_time`
