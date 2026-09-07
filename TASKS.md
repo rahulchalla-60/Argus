@@ -112,15 +112,15 @@
 ## Phase 3 — Fraud Scoring Engine (Week 3)
 
 ### 3.1 Rule Engine
-- [ ] Create `rule_engine.py`
-- [ ] Implement configurable rules:
-  - [ ] `pass_through_ratio > 0.95` -> HIGH
-  - [ ] `forwarding_delay < 30 sec` -> MEDIUM
-  - [ ] `fan_in > 20` -> MEDIUM
-  - [ ] `velocity > 5 txns/min` -> MEDIUM
-- [ ] Combine rules: if 2+ MEDIUM triggers -> HIGH
-- [ ] Return rule-based risk label: LOW / MEDIUM / HIGH
-- [ ] Test: account with ratio=0.98, delay=8s -> HIGH
+- [x] Create `rule_engine.py`
+- [x] Implement configurable rules:
+  - [x] `pass_through_ratio > 0.95` -> HIGH
+  - [x] `forwarding_delay < 30 sec` -> MEDIUM
+  - [x] `fan_in > 20` -> MEDIUM
+  - [x] `velocity > 5 txns/min` -> MEDIUM
+- [x] Combine rules: if 2+ MEDIUM triggers -> HIGH
+- [x] Return rule-based risk label: LOW / MEDIUM / HIGH
+- [x] Test: account with ratio=0.98, delay=8s -> HIGH
 
 ### 3.2 Training Data Preparation
 - [ ] Label accounts as mule / not-mule (use dataset labels or synthetic labels)
