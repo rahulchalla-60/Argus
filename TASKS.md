@@ -123,20 +123,20 @@
 - [x] Test: account with ratio=0.98, delay=8s -> HIGH
 
 ### 3.2 Training Data Preparation
-- [ ] Label accounts as mule / not-mule (use dataset labels or synthetic labels)
-- [ ] For each labeled account, compute all 6 features
-- [ ] Create feature matrix X and label vector y
-- [ ] Train/test split (80/20)
-- [ ] Save training data as CSV for reproducibility
+- [x] Label accounts as mule / not-mule (use dataset labels or synthetic labels)
+- [x] For each labeled account, compute all 6 features
+- [x] Create feature matrix X and label vector y
+- [x] Train/test split (80/20)
+- [x] Save training data as CSV for reproducibility
 
 ### 3.3 ML Model Training
-- [ ] Create `risk_engine.py`
-- [ ] Train XGBoost (or LightGBM or RandomForest) classifier
-- [ ] Input: forwarding_delay, velocity, fan_in, fan_out, pass_through_ratio, counterparties
-- [ ] Output: risk score 0.0 -> 1.0 (use `predict_proba`)
-- [ ] Evaluate: accuracy, precision, recall, F1, AUC-ROC
-- [ ] Print confusion matrix
-- [ ] Save trained model to `/models/risk_model.pkl`
+- [x] Create `risk_engine.py`
+- [x] Train XGBoost (or LightGBM or RandomForest) classifier
+- [x] Input: forwarding_delay, velocity, fan_in, fan_out, pass_through_ratio, counterparties
+- [x] Output: risk score 0.0 -> 1.0 (use `predict_proba`)
+- [x] Evaluate: accuracy, precision, recall, F1, AUC-ROC
+- [x] Print confusion matrix
+- [x] Save trained model to `/models/risk_model.pkl`
 
 ### 3.4 Real-Time Scoring
 - [ ] Load saved model in risk_engine
