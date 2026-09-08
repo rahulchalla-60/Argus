@@ -37,6 +37,27 @@ class Database:
             self.conn.execute("CREATE INDEX IF NOT EXISTS idx_dest_step ON transactions(nameDest, step)")
             self.conn.execute("CREATE INDEX IF NOT EXISTS idx_step ON transactions(step)")
 
+            # Option B: Latest risk score per account + history for significant changes
+            self.conn.execute("""
+                CREATE TABLE IF NOT EXISTS risk_scores (
+                    account_id TEXT PRIMARY KEY,
+                    risk_score REAL NOT NULL,
+                    step INTEGER NOT NULL,
+                    model_type TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            self.conn.execute("""
+                CREATE TABLE IF NOT EXISTS risk_history (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    account_id TEXT NOT NULL,
+                    risk_score REAL NOT NULL,
+                    step INTEGER NOT NULL,
+                    model_type TEXT
+                )
+            """)
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_risk_hist_acc ON risk_history(account_id, step)")
+
     def insert_transaction(
         self,
         step: int,
@@ -71,28 +92,56 @@ class Database:
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, rows)
 
-    def ingest_csv(self, csv_path: str | Path, chunksize: int = 50000, max_rows: int | None = None) -> int:
-        total_inserted = 0
-        for chunk in pd.read_csv(csv_path, chunksize=chunksize, nrows=max_rows):
-            rows = [
-                (
-                    int(r.step),
-                    str(r.type),
-                    float(r.amount),
-                    str(r.nameOrig),
-                    float(getattr(r, "oldbalanceOrg", 0.0)),
-                    float(getattr(r, "newbalanceOrig", 0.0)),
-                    str(r.nameDest),
-                    float(getattr(r, "oldbalanceDest", 0.0)),
-                    float(getattr(r, "newbalanceDest", 0.0)),
-                    int(getattr(r, "isFraud", 0)),
-                    int(getattr(r, "isFlaggedFraud", 0))
-                )
-                for r in chunk.itertuples(index=False)
-            ]
-            self.insert_batch(rows)
-            total_inserted += len(rows)
-        return total_inserted
+    def save_risk_score(
+        self,
+        account_id: str,
+        risk_score: float,
+        step: int,
+        model_type: str = "xgboost",
+        threshold: float = 0.30,
+        delta_threshold: float = 0.10
+    ) -> bool:
+        # Option B: Persist only if risk_score >= threshold or delta >= delta_threshold
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT risk_score FROM risk_scores WHERE account_id = ?", (account_id,))
+        row = cursor.fetchone()
+
+        prev_score = row["risk_score"] if row else None
+        should_save = False
+
+        if risk_score >= threshold:
+            should_save = True
+        elif prev_score is not None and abs(risk_score - prev_score) >= delta_threshold:
+            should_save = True
+
+        if should_save:
+            with self.conn:
+                self.conn.execute("""
+                    INSERT OR REPLACE INTO risk_scores (account_id, risk_score, step, model_type, updated_at)
+                    VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """, (account_id, risk_score, step, model_type))
+
+                self.conn.execute("""
+                    INSERT INTO risk_history (account_id, risk_score, step, model_type)
+                    VALUES (?, ?, ?, ?)
+                """, (account_id, risk_score, step, model_type))
+
+        return should_save
+
+    def get_account_risk(self, account_id: str) -> dict[str, Any] | None:
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM risk_scores WHERE account_id = ?", (account_id,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+    def get_high_risk_accounts(self, min_score: float = 0.80) -> list[dict[str, Any]]:
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT * FROM risk_scores
+            WHERE risk_score >= ?
+            ORDER BY risk_score DESC, step DESC
+        """, (min_score,))
+        return [dict(r) for r in cursor.fetchall()]
 
     def get_account_history(self, account_id: str, limit: int | None = None) -> list[dict[str, Any]]:
         cursor = self.conn.cursor()
@@ -107,26 +156,6 @@ class Database:
             params.append(limit)
         cursor.execute(query, params)
         return [dict(row) for row in cursor.fetchall()]
-
-    def get_recent_transactions(self, limit: int = 50000) -> list[dict[str, Any]]:
-        cursor = self.conn.cursor()
-        cursor.execute("""
-            SELECT * FROM (
-                SELECT * FROM transactions
-                ORDER BY step DESC, id DESC
-                LIMIT ?
-            ) ORDER BY step ASC, id ASC
-        """, (limit,))
-        return [dict(row) for row in cursor.fetchall()]
-
-    def stream_transactions(self, batch_size: int = 10000) -> Generator[list[dict[str, Any]], None, None]:
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM transactions ORDER BY step ASC, id ASC")
-        while True:
-            rows = cursor.fetchmany(batch_size)
-            if not rows:
-                break
-            yield [dict(r) for r in rows]
 
     def count(self) -> int:
         cursor = self.conn.cursor()

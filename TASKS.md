@@ -139,11 +139,11 @@
 - [x] Save trained model to `/models/risk_model.pkl`
 
 ### 3.4 Real-Time Scoring
-- [ ] Load saved model in risk_engine
-- [ ] Implement `score_account(account_id)` -> returns float 0.0-1.0
-- [ ] Hook into stream: every N transactions, re-score affected accounts
-- [ ] Test: score account with known mule features -> expect > 0.8
-- [ ] Measure scoring latency (target: < 10ms per account)
+- [x] Load saved model in risk_engine
+- [x] Implement `score_account(account_id)` -> returns float 0.0-1.0
+- [x] Hook into stream: every N transactions, re-score affected accounts
+- [x] Test: score account with known mule features -> expect > 0.8
+- [x] Measure scoring latency (target: < 10ms per account)
 
 ### 3.5 Alert Generation
 - [ ] Define alert threshold (e.g., risk > 0.8)

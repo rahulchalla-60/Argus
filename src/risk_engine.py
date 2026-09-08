@@ -109,8 +109,39 @@ class RiskEngine:
 
     def predict_risk(self, feature_dict: dict[str, Any]) -> float:
         self._check_model()
-        row = pd.DataFrame([{f: feature_dict.get(f, 0.0) for f in self.features}])
+        clean_row = {}
+        for f in self.features:
+            val = feature_dict.get(f)
+            if val is None:
+                clean_row[f] = -1.0 if f == "forwarding_delay" else 0.0
+            else:
+                clean_row[f] = float(val)
+        row = pd.DataFrame([clean_row])
         return float(self.model.predict_proba(row)[0][1])
+
+    def score_account(
+        self,
+        account_id: str,
+        feature_engine: Any,
+        db: Any = None,
+        step: int = 0
+    ) -> float:
+        self._check_model()
+        feat_dict = feature_engine.get_features_dict(account_id)
+        if not feat_dict:
+            return 0.0
+
+        score = self.predict_risk(feat_dict)
+
+        if db:
+            db.save_risk_score(
+                account_id=account_id,
+                risk_score=score,
+                step=step,
+                model_type=self.model_type or "xgboost"
+            )
+
+        return score
 
     def get_feature_importances(self) -> dict[str, float]:
         self._check_model()
