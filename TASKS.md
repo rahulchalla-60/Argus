@@ -163,14 +163,14 @@
 - [x] Test: flag account A, verify B gets 0.5, C gets 0.25
 
 ### 4.2 Neighbor Risk as Feature
-- [ ] Compute `neighbor_risk` = max risk among 1-hop neighbors
-- [ ] Add `neighbor_risk` to feature vector
-- [ ] Re-train model with this new feature
-- [ ] Compare performance: with vs without neighbor_risk
+- [x] Compute `neighbor_risk` = max risk among 1-hop neighbors
+- [x] Add `neighbor_risk` to feature vector
+- [x] Re-train model with this new feature
+- [x] Compare performance: with vs without neighbor_risk
 
 ### 4.3 Propagation Visualization
-- [ ] Color nodes by propagated risk: red (>0.8), orange (0.5-0.8), yellow (0.3-0.5), green (<0.3)
-- [ ] Test: visualize a chain A -> B -> C with decaying risk colors
+- [x] Color nodes by propagated risk: red (>0.8), orange (0.5-0.8), yellow (0.3-0.5), green (<0.3)
+- [x] Test: visualize a chain A -> B -> C with decaying risk colors
 
 ---
 

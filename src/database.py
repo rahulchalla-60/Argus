@@ -157,6 +157,26 @@ class Database:
         cursor.execute(query, params)
         return [dict(row) for row in cursor.fetchall()]
 
+    def get_recent_transactions(self, limit: int = 50000) -> list[dict[str, Any]]:
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT * FROM (
+                SELECT * FROM transactions
+                ORDER BY step DESC, id DESC
+                LIMIT ?
+            ) ORDER BY step ASC, id ASC
+        """, (limit,))
+        return [dict(row) for row in cursor.fetchall()]
+
+    def stream_transactions(self, batch_size: int = 10000) -> Generator[list[dict[str, Any]], None, None]:
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM transactions ORDER BY step ASC, id ASC")
+        while True:
+            rows = cursor.fetchmany(batch_size)
+            if not rows:
+                break
+            yield [dict(r) for r in rows]
+
     def count(self) -> int:
         cursor = self.conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM transactions")

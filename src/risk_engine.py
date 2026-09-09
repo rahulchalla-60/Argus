@@ -11,7 +11,8 @@ import xgboost as xgb
 
 DEFAULT_FEATURES = [
     "forwarding_delay", "velocity", "fan_in", "fan_out",
-    "pass_through_ratio", "counterparties", "total_received", "total_sent"
+    "pass_through_ratio", "counterparties", "total_received", "total_sent",
+    "neighbor_risk"
 ]
 
 
@@ -29,9 +30,12 @@ class RiskEngine:
             raise RuntimeError("Model is not trained or loaded. Call train() or load().")
 
     def _validate_data(self, df: pd.DataFrame, require_label: bool = True):
-        missing = set(self.features) - set(df.columns)
-        if missing:
-            raise ValueError(f"Input data is missing required feature columns: {missing}")
+        for f in self.features:
+            if f not in df.columns:
+                if f == "neighbor_risk":
+                    df[f] = 0.0
+                else:
+                    raise ValueError(f"Input data is missing required feature column: '{f}'")
         if require_label and "label" not in df.columns:
             raise ValueError("Input data is missing required target column: 'label'")
 

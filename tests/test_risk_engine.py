@@ -45,7 +45,7 @@ def test_risk_engine_training_and_inference():
     meta = re.train(TRAIN_CSV, model_type="xgboost")
     assert meta["model_type"] == "xgboost"
     assert meta["samples"] > 0
-    assert len(meta["feature_importances"]) == 8
+    assert len(meta["feature_importances"]) == len(re.features)
 
     # Evaluate on test set
     eval_res = re.evaluate(TEST_CSV)

@@ -24,6 +24,9 @@ class AccountFeatures:
     rolling_sent: float = 0.0
     pass_through_ratio: float = 0.0
 
+    # Graph-derived topological risk (Phase 4)
+    neighbor_risk: float = 0.0
+
     # Sliding window queues: (timestamp, amount, counterparty)
     recent_incoming: Deque[tuple[int, float, str]] = field(default_factory=deque)
     recent_outgoing: Deque[tuple[int, float, str]] = field(default_factory=deque)
@@ -94,13 +97,14 @@ class AccountFeatures:
             "fan_out": self.fan_out,
             "lifetime_fan_in": len(self.unique_senders),
             "lifetime_fan_out": len(self.unique_receivers),
+            "counterparties": len(self.unique_senders) + len(self.unique_receivers),
+            "neighbor_risk": self.neighbor_risk,
             "txn_count": self.txn_count,
         }
 
 
 class FeatureEngine:
     def __init__(self, time_window: int = 24):
-        # time_window: window length in PaySim steps (1 step = 1 hour; default = 24 steps / 1 day)
         self.time_window = time_window
         self.features: dict[str, AccountFeatures] = {}
 
