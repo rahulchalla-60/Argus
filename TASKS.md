@@ -156,11 +156,11 @@
 ## Phase 4 — Risk Propagation (Week 4)
 
 ### 4.1 Basic Propagation
-- [ ] Implement `propagate_risk(graph, flagged_accounts)`
-- [ ] Algorithm: BFS from flagged nodes with decay factor
-  - [ ] A = 1.0, B (1 hop) = 0.5, C (2 hops) = 0.25
-- [ ] Configurable: decay_factor (default 0.5), max_hops (default 3)
-- [ ] Test: flag account A, verify B gets 0.5, C gets 0.25
+- [x] Implement `propagate_risk(graph, flagged_accounts)`
+- [x] Algorithm: BFS from flagged nodes with decay factor
+  - [x] A = 1.0, B (1 hop) = 0.5, C (2 hops) = 0.25
+- [x] Configurable: decay_factor (default 0.5), max_hops (default 3)
+- [x] Test: flag account A, verify B gets 0.5, C gets 0.25
 
 ### 4.2 Neighbor Risk as Feature
 - [ ] Compute `neighbor_risk` = max risk among 1-hop neighbors
