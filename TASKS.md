@@ -146,10 +146,10 @@
 - [x] Measure scoring latency (target: < 10ms per account)
 
 ### 3.5 Alert Generation
-- [ ] Define alert threshold (e.g., risk > 0.8)
-- [ ] Create alert object: `{account_id, risk_score, timestamp, reasons}`
-- [ ] Store alerts in a list/queue
-- [ ] Test: inject mule-like transactions -> verify alert is generated
+- [x] Define alert threshold (e.g., risk > 0.8)
+- [x] Create alert object: `{account_id, risk_score, timestamp, reasons}`
+- [x] Store alerts in a list/queue
+- [x] Test: inject mule-like transactions -> verify alert is generated
 
 ---
 
