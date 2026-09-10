@@ -18,26 +18,53 @@ class GraphEngine:
         self.db = db
         self.feature_engine = feature_engine
 
-    def add_transaction(self, sender: str, receiver: str, amount: float, timestamp: int, **metadata):
+    def add_transaction(
+        self,
+        sender: str | dict,
+        receiver: str | None = None,
+        amount: float | None = None,
+        timestamp: int | None = None,
+        **metadata
+    ):
+        if isinstance(sender, dict):
+            txn = sender
+            s = str(txn.get("nameOrig", ""))
+            r = str(txn.get("nameDest", ""))
+            amt = float(txn.get("amount", 0.0))
+            t = int(txn.get("step", txn.get("timestamp", 0)))
+            meta = {k: v for k, v in txn.items() if k not in ("nameOrig", "nameDest", "amount", "step", "timestamp")}
+            meta.update(metadata)
+            if self.db and hasattr(self.db, "insert_transaction"):
+                try:
+                    self.db.insert_transaction(txn)
+                except Exception:
+                    pass
+        else:
+            s = str(sender)
+            r = str(receiver)
+            amt = float(amount if amount is not None else 0.0)
+            t = int(timestamp if timestamp is not None else 0)
+            meta = metadata
+
         # 1. Update Graph & sliding window
-        self.graph.add_node(sender)
-        self.graph.add_node(receiver)
+        self.graph.add_node(s)
+        self.graph.add_node(r)
 
         edge_key = self.graph.add_edge(
-            sender,
-            receiver,
-            amount=amount,
-            timestamp=timestamp,
-            **metadata
+            s,
+            r,
+            amount=amt,
+            timestamp=t,
+            **meta
         )
-        self.window.append((sender, receiver, edge_key))
+        self.window.append((s, r, edge_key))
 
         if len(self.window) > self.window_size:
             self._evict_oldest()
 
         # 2. Incrementally update feature engine in O(1)
         if self.feature_engine:
-            self.feature_engine.update_transaction(sender, receiver, amount=amount, timestamp=timestamp)
+            self.feature_engine.update_transaction(s, r, amount=amt, timestamp=t)
 
     def _evict_oldest(self):
         old_sender, old_receiver, old_key = self.window.popleft()
@@ -123,3 +150,6 @@ class GraphEngine:
             frontier = next_frontier
 
         return self.graph.subgraph(nodes).copy()
+
+    def get_k_hop_subgraph(self, account_id: str, k: int = 1) -> nx.MultiDiGraph:
+        return self.get_subgraph(account_id, k_hops=k)

@@ -7,7 +7,7 @@ import pandas as pd
 class Database:
     def __init__(self, db_path: str | Path = ":memory:"):
         self.db_path = str(db_path)
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
         self._init_db()
 
@@ -57,6 +57,17 @@ class Database:
                 )
             """)
             self.conn.execute("CREATE INDEX IF NOT EXISTS idx_risk_hist_acc ON risk_history(account_id, step)")
+            self.conn.execute("""
+                CREATE TABLE IF NOT EXISTS alerts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    account_id TEXT NOT NULL,
+                    risk_score REAL NOT NULL,
+                    step INTEGER NOT NULL,
+                    reasons TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_alerts_acc ON alerts(account_id)")
 
     def insert_transaction(
         self,
@@ -127,6 +138,15 @@ class Database:
                 """, (account_id, risk_score, step, model_type))
 
         return should_save
+
+    def save_alert(self, account_id: str, risk_score: float, step: int, reasons: list[str] | str):
+        import json
+        reasons_str = json.dumps(reasons) if isinstance(reasons, list) else str(reasons)
+        with self.conn:
+            self.conn.execute("""
+                INSERT INTO alerts (account_id, risk_score, step, reasons)
+                VALUES (?, ?, ?, ?)
+            """, (account_id, float(risk_score), int(step), reasons_str))
 
     def get_account_risk(self, account_id: str) -> dict[str, Any] | None:
         cursor = self.conn.cursor()

@@ -206,135 +206,135 @@
 ## Phase 6 — Explainability (Week 6)
 
 ### 6.1 Explainability Engine
-- [ ] Create `explainability.py`
-- [ ] For each alert, generate human-readable reasons list
-- [ ] Use SHAP values or feature importance to rank contributing factors
-- [ ] Format output as JSON with risk score + reasons array
-- [ ] Test: generate explanation for a known mule account
+- [x] Create `explainability.py`
+- [x] For each alert, generate human-readable reasons list
+- [x] Use SHAP values or feature importance to rank contributing factors
+- [x] Format output as JSON with risk score + reasons array
+- [x] Test: generate explanation for a known mule account
 
 ### 6.2 Subgraph Extraction for Explanation
-- [ ] Extract suspicious subgraph around flagged account (2-hop)
-- [ ] Identify the flow: Payer -> Mule -> Cashout
-- [ ] Return subgraph data for frontend visualization
+- [x] Extract suspicious subgraph around flagged account (2-hop)
+- [x] Identify the flow: Payer -> Mule -> Cashout
+- [x] Return subgraph data for frontend visualization
 
 ### 6.3 Cluster Detection
-- [ ] Implement community detection (Louvain algorithm via networkx)
-- [ ] Identify clusters of tightly connected accounts
-- [ ] Compute cluster-level stats: size, total volume, avg risk, shared devices
-- [ ] Label clusters: "Mule Ring", "Betting Ring", etc. (heuristics)
-- [ ] Test: inject a synthetic mule ring, verify it is detected as a cluster
+- [x] Implement community detection (Louvain algorithm via networkx)
+- [x] Identify clusters of tightly connected accounts
+- [x] Compute cluster-level stats: size, total volume, avg risk, shared devices
+- [x] Label clusters: "Mule Ring", "Betting Ring", etc. (heuristics)
+- [x] Test: inject a synthetic mule ring, verify it is detected as a cluster
 
 ---
 
 ## Phase 7 — Frontend / Dashboard (After Backend)
 
 ### 7.1 Streamlit App Setup
-- [ ] Create `dashboard.py` (Streamlit entry point)
-- [ ] Set up multi-page navigation with sidebar
-- [ ] Configure page layout, theme, title ("Argus — AML Detection Platform")
+- [x] Create `dashboard.py` (Streamlit entry point)
+- [x] Set up multi-page navigation with sidebar
+- [x] Configure page layout, theme, title ("Argus — AML Detection Platform")
 
 ### 7.2 Screen 1 — Executive Dashboard
-- [ ] KPI cards: Transactions, Accounts, High Risk, Alerts, Latency, Graph Size
-- [ ] Chart: Transactions per minute (line chart, Plotly)
-- [ ] Chart: Risk score distribution (histogram)
-- [ ] Chart: Alerts over time (bar chart)
-- [ ] Auto-refresh every N seconds
+- [x] KPI cards: Transactions, Accounts, High Risk, Alerts, Latency, Graph Size
+- [x] Chart: Transactions per minute (line chart, Plotly)
+- [x] Chart: Risk score distribution (histogram)
+- [x] Chart: Alerts over time (bar chart)
+- [x] Auto-refresh every N seconds
 
 ### 7.3 Screen 2 — Live Transaction Stream
-- [ ] Scrolling table: Time | From | To | Amount | Risk
-- [ ] Color-code rows by risk (green/yellow/red)
-- [ ] Pause/Resume stream button
-- [ ] Search by account ID
-- [ ] Filter by amount range
-- [ ] Filter by risk level
+- [x] Scrolling table: Time | From | To | Amount | Risk
+- [x] Color-code rows by risk (green/yellow/red)
+- [x] Pause/Resume stream button
+- [x] Search by account ID
+- [x] Filter by amount range
+- [x] Filter by risk level
 
 ### 7.4 Screen 3 — Alerts Center
-- [ ] Table: Account | Risk Score | Reason | Time
-- [ ] Filter: Risk > threshold slider
-- [ ] Filter: Time range picker
-- [ ] Filter: Alert type dropdown
-- [ ] Click row -> navigate to Investigation Workbench
+- [x] Table: Account | Risk Score | Reason | Time
+- [x] Filter: Risk > threshold slider
+- [x] Filter: Time range picker
+- [x] Filter: Alert type dropdown
+- [x] Click row -> navigate to Investigation Workbench
 
 ### 7.5 Screen 4 — Investigation Workbench
-- [ ] Input: account ID (from alerts or manual entry)
-- [ ] Display: Risk score (big number, color-coded)
-- [ ] Display: Feature values table
-- [ ] Display: Transaction history table for this account
-- [ ] Display: Connected accounts list
-- [ ] Display: Risk reasons (from explainability engine)
-- [ ] Links to: Graph Explorer, Explainability Center
+- [x] Input: account ID (from alerts or manual entry)
+- [x] Display: Risk score (big number, color-coded)
+- [x] Display: Feature values table
+- [x] Display: Transaction history table for this account
+- [x] Display: Connected accounts list
+- [x] Display: Risk reasons (from explainability engine)
+- [x] Links to: Graph Explorer, Explainability Center
 
 ### 7.6 Screen 5 — Graph Explorer
-- [ ] View A — Local Neighborhood: 1-hop neighbors
-- [ ] View B — k-Hop Expansion: click to expand, configurable k (1-4)
-- [ ] View C — Time Window: slider for time period (5 min, 1h, 24h, 7d)
-- [ ] View D — Risk Filter: slider to hide nodes below threshold
-- [ ] View E — Cluster View: detected communities as grouped nodes
-- [ ] View F — Device/IP View: bipartite account <-> device/IP graph
-- [ ] Interactive: click nodes for details, hover for tooltips
-- [ ] Color nodes by risk level
-- [ ] Size nodes by transaction volume
+- [x] View A — Local Neighborhood: 1-hop neighbors
+- [x] View B — k-Hop Expansion: click to expand, configurable k (1-4)
+- [x] View C — Time Window: slider for time period (5 min, 1h, 24h, 7d)
+- [x] View D — Risk Filter: slider to hide nodes below threshold
+- [x] View E — Cluster View: detected communities as grouped nodes
+- [x] View F — Device/IP View: bipartite account <-> device/IP graph
+- [x] Interactive: click nodes for details, hover for tooltips
+- [x] Color nodes by risk level
+- [x] Size nodes by transaction volume
 
 ### 7.7 Screen 6 — Device Intelligence Center
-- [ ] Table: Top Shared Devices (device_id | account_count)
-- [ ] Table: Top Shared IPs (ip_id | account_count)
-- [ ] Suspicious device rings visualization
-- [ ] Click device -> show connected accounts
+- [x] Table: Top Shared Devices (device_id | account_count)
+- [x] Table: Top Shared IPs (ip_id | account_count)
+- [x] Suspicious device rings visualization
+- [x] Click device -> show connected accounts
 
 ### 7.8 Screen 7 — Explainability Center
-- [ ] Input: account ID
-- [ ] Display: Risk score
-- [ ] Display: Contributing factors with importance bars (waterfall chart)
-- [ ] Display: Feature values vs population average
-- [ ] Display: Top reasons in plain English
+- [x] Input: account ID
+- [x] Display: Risk score
+- [x] Display: Contributing factors with importance bars (waterfall chart)
+- [x] Display: Feature values vs population average
+- [x] Display: Top reasons in plain English
 
 ### 7.9 Screen 8 — Cluster Analysis
-- [ ] Table: Cluster ID | Size | Avg Risk | Shared Devices | Total Volume
-- [ ] Click cluster -> show member accounts
-- [ ] Visualize cluster as subgraph
-- [ ] Filter: high-risk clusters only
+- [x] Table: Cluster ID | Size | Avg Risk | Shared Devices | Total Volume
+- [x] Click cluster -> show member accounts
+- [x] Visualize cluster as subgraph
+- [x] Filter: high-risk clusters only
 
 ### 7.10 Screen 9 — Transaction Replay
-- [ ] Date range picker (start, end)
-- [ ] Play / Pause / Speed controls (1x, 2x, 5x, 10x)
-- [ ] Graph evolves as transactions replay
-- [ ] Show transaction counter and current timestamp
-- [ ] Highlight newly added edges/nodes
+- [x] Date range picker (start, end)
+- [x] Play / Pause / Speed controls (1x, 2x, 5x, 10x)
+- [x] Graph evolves as transactions replay
+- [x] Show transaction counter and current timestamp
+- [x] Highlight newly added edges/nodes
 
 ### 7.11 Screen 10 — System Metrics
-- [ ] Throughput: transactions/sec (live counter)
-- [ ] Latency breakdown: graph update, feature computation, scoring
-- [ ] Graph size: node count, edge count (live)
-- [ ] Memory usage
-- [ ] Charts: latency over time, throughput over time
+- [x] Throughput: transactions/sec (live counter)
+- [x] Latency breakdown: graph update, feature computation, scoring
+- [x] Graph size: node count, edge count (live)
+- [x] Memory usage
+- [x] Charts: latency over time, throughput over time
 
 ---
 
 ## Phase 8 — Polish & Interview Prep
 
 ### 8.1 README
-- [ ] Problem statement
-- [ ] Architecture diagram (Mermaid or image)
-- [ ] AML concepts explained (mule accounts, layering, structuring)
-- [ ] Feature explanations with examples
-- [ ] Latency measurements
-- [ ] Example mule ring detection screenshot
-- [ ] Screenshots of all 10 screens
-- [ ] How to run instructions
+- [x] Problem statement
+- [x] Architecture diagram (Mermaid or image)
+- [x] AML concepts explained (mule accounts, layering, structuring)
+- [x] Feature explanations with examples
+- [x] Latency measurements
+- [x] Example mule ring detection screenshot
+- [x] Screenshots of all 10 screens
+- [x] How to run instructions
 
 ### 8.2 Demo Script
-- [ ] Write 2-minute interview demo flow
-- [ ] Test end-to-end: transaction arrives -> alert generated
-- [ ] Prepare talking points for each screen
-- [ ] Prepare answers for expected questions:
-  - [ ] "Why not deep learning?"
-  - [ ] "How would you scale this?"
-  - [ ] "What is the false positive rate?"
-  - [ ] "How does risk propagation work?"
-  - [ ] "What graph algorithms did you use?"
+- [x] Write 2-minute interview demo flow
+- [x] Test end-to-end: transaction arrives -> alert generated
+- [x] Prepare talking points for each screen
+- [x] Prepare answers for expected questions:
+  - [x] "Why not deep learning?"
+  - [x] "How would you scale this?"
+  - [x] "What is the false positive rate?"
+  - [x] "How does risk propagation work?"
+  - [x] "What graph algorithms did you use?"
 
 ### 8.3 Final Testing
-- [ ] End-to-end test: stream 1000 transactions, verify alerts
-- [ ] Performance test: measure latency at 10k, 100k, 1M transactions
-- [ ] Edge case test: empty graph, single node, disconnected components
-- [ ] Verify all 10 screens render correctly
+- [x] End-to-end test: stream 1000 transactions, verify alerts
+- [x] Performance test: measure latency at 10k, 100k, 1M transactions
+- [x] Edge case test: empty graph, single node, disconnected components
+- [x] Verify all 10 screens render correctly

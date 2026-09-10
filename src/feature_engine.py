@@ -104,8 +104,8 @@ class AccountFeatures:
 
 
 class FeatureEngine:
-    def __init__(self, time_window: int = 24):
-        self.time_window = time_window
+    def __init__(self, time_window: int = 24, window_seconds: int | None = None):
+        self.time_window = window_seconds if window_seconds is not None else time_window
         self.features: dict[str, AccountFeatures] = {}
 
     def get_or_create(self, account_id: str) -> AccountFeatures:
@@ -113,21 +113,43 @@ class FeatureEngine:
             self.features[account_id] = AccountFeatures(account_id=account_id)
         return self.features[account_id]
 
-    def update_transaction(self, sender: str, receiver: str, amount: float, timestamp: int):
-        sender_acc = self.get_or_create(sender)
-        sender_acc.send(timestamp, amount=amount, receiver=receiver)
-        sender_acc.prune(timestamp, self.time_window)
+    def update_transaction(
+        self,
+        sender: str | dict,
+        receiver: str | None = None,
+        amount: float | None = None,
+        timestamp: int | None = None
+    ):
+        if isinstance(sender, dict):
+            txn = sender
+            s = str(txn.get("nameOrig", ""))
+            r = str(txn.get("nameDest", ""))
+            a = float(txn.get("amount", 0.0))
+            t = int(txn.get("step", txn.get("timestamp", 0)))
+        else:
+            s = str(sender)
+            r = str(receiver)
+            a = float(amount or 0.0)
+            t = int(timestamp or 0)
 
-        receiver_acc = self.get_or_create(receiver)
-        receiver_acc.receive(timestamp, amount=amount, sender=sender)
-        receiver_acc.prune(timestamp, self.time_window)
+        sender_acc = self.get_or_create(s)
+        sender_acc.send(t, amount=a, receiver=r)
+        sender_acc.prune(t, self.time_window)
+
+        receiver_acc = self.get_or_create(r)
+        receiver_acc.receive(t, amount=a, sender=s)
+        receiver_acc.prune(t, self.time_window)
 
     def get_features(self, account_id: str) -> AccountFeatures | None:
         return self.features.get(account_id)
 
+    def get_all_features(self) -> dict[str, AccountFeatures]:
+        return self.features
+
     def get_features_dict(self, account_id: str) -> dict[str, Any] | None:
-        acc = self.get_features(account_id)
-        return acc.to_dict() if acc else None
+        if account_id in self.features:
+            return self.features[account_id].to_dict()
+        return None
 
     def account_count(self) -> int:
         return len(self.features)

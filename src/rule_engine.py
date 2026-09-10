@@ -67,3 +67,6 @@ class RuleEngine:
             "reasons": reasons,
             "triggered_count": (1 if is_direct_high else 0) + medium_triggers,
         }
+
+    def evaluate_account(self, features: dict[str, Any] | AccountFeatures) -> dict[str, Any]:
+        return self.evaluate(features)

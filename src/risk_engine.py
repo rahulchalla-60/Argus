@@ -125,21 +125,30 @@ class RiskEngine:
 
     def score_account(
         self,
-        account_id: str,
-        feature_engine: Any,
+        account_or_features: str | dict[str, Any],
+        feature_engine: Any = None,
         db: Any = None,
         step: int = 0
     ) -> float:
         self._check_model()
-        feat_dict = feature_engine.get_features_dict(account_id)
+        if isinstance(account_or_features, dict):
+            feat_dict = account_or_features
+            acc_id = feat_dict.get("account_id")
+        else:
+            acc_id = str(account_or_features)
+            if feature_engine:
+                feat_dict = feature_engine.get_features_dict(acc_id)
+            else:
+                feat_dict = None
+
         if not feat_dict:
             return 0.0
 
         score = self.predict_risk(feat_dict)
 
-        if db:
+        if db and acc_id:
             db.save_risk_score(
-                account_id=account_id,
+                account_id=acc_id,
                 risk_score=score,
                 step=step,
                 model_type=self.model_type or "xgboost"
